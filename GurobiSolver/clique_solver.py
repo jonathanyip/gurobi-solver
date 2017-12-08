@@ -22,13 +22,13 @@ class CliqueSolver(object):
         """
         # Define what can be taken as arguments
         parser = argparse.ArgumentParser()
-        parser.add_argument('ilp_filename', help="The file containing your ILP formulation. It should end in .lp")
+        parser.add_argument('ilpFilename', help="The file containing your ILP formulation. It should end in .lp")
         parser.add_argument('-m', '--min', type=int, default=0, help="The minimum Objective Value to reach before we stop iterating. Stops when we reach this value. Default: 0.")
         parser.add_argument('-q', '--quiet', help="Include this flag if you don't want to see Gurobi output.", action='store_true')
 
         # Parse the actual arguments
         args = parser.parse_args()
-        self.ilp_filename = args.ilp_filename
+        self.ilp_filename = args.ilpFilename
         self.quiet = args.quiet
         self.min = int(args.min)
 
