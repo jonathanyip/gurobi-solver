@@ -23,7 +23,7 @@ class NativeGurobiSolver(object):
         parser = argparse.ArgumentParser()
         parser.add_argument('ilpFilename', help="The file containing your ILP formulation. It should end in .lp")
         parser.add_argument('-r', '--resultfile', help="Where to store the results.")
-        parser.add_argument('-n', '--numSols', default=2000000000, help="Gets the n most optional solutions. Default: As many as Gurobi can handle (2 billion).")
+        parser.add_argument('-n', '--numSols', type=int, default=2000000000, help="Gets the n most optional solutions. Default: As many as Gurobi can handle (2 billion).")
 
         args = parser.parse_args()
         self.ilp_filename = args.ilpFilename
@@ -34,6 +34,7 @@ class NativeGurobiSolver(object):
         """
         Reads in the ILP file, and runs Gurobi
         """
+        self.log("Running Gurobi...")
         model = read(self.ilp_filename)
 
         # Search for as many solutions as possible
