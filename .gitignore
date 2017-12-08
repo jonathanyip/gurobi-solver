@@ -105,3 +105,4 @@ venv.bak/
 
 # Don't git include the results folders.
 results_*/
+*.sol

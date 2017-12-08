@@ -45,7 +45,19 @@ class NativeGurobiSolver(object):
         # Run Gurobi
         model.optimize()
 
-        # Check to see if any errors
+        # Prevent Gurobi from printing out random junk, like how we set an attribute...
+        model.setParam(GRB.Param.OutputFlag, False)
+
+        # Check the model
+        self.check_model(model)
+
+        # Get the solutions
+        self.get_solutions(model)
+
+    def check_model(self, model):
+        """
+        Checks the given model to see if it had any problems optimizing
+        """
         if model.status != GRB.Status.OPTIMAL:
             if model.status == GRB.Status.INFEASIBLE:
                 self.log("[Gurobi:ERROR]: Model is infeasible.", error=True)
@@ -55,9 +67,10 @@ class NativeGurobiSolver(object):
                 self.log("[Gurobi:ERROR]: Gurobi exited with status {}.".format(model.status), error=True)
             exit(1)
 
-        # Don't want Gurobi printing random stuff, like how we set an attribute...
-        model.setParam(GRB.Param.OutputFlag, False)
-
+    def get_solutions(self, model):
+        """
+        Given a model, prints out the solutions (and saves them it applicable)
+        """
         # Iterate through all the solutions
         self.log("Found the following solutions:")
 
@@ -86,6 +99,9 @@ class NativeGurobiSolver(object):
                 f.write(solution_string)
 
     def log(self, string, error=False):
+        """
+        Prints out stuff
+        """
         if error:
             print("[NativeGurobiSolver:ERROR]: {}".format(string))
         else:
