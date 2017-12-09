@@ -7,11 +7,11 @@ class NativeGurobiSolver(object):
     """
     Takes in a ILP file, and (using Gurobi Python API) natively tries to find all solutions
     """
-
     def __init__(self):
         self.ilp_filename = None
         self.num_solutions = None
         self.resultfile = None
+        self.solutions = []
 
         self.parse_args()
         self.run_gurobi()
@@ -55,17 +55,20 @@ class NativeGurobiSolver(object):
         # Get the solutions
         self.get_solutions(model)
 
+        # Write the solutions to file
+        self.write_solutions()
+
     def check_model(self, model):
         """
         Checks the given model to see if it had any problems optimizing
         """
         if model.status != GRB.Status.OPTIMAL:
             if model.status == GRB.Status.INFEASIBLE:
-                self.log("[Gurobi:ERROR]: Model is infeasible.", error=True)
+                self.log("Model is infeasible.", error=True)
             elif model.status == GRB.Status.INF_OR_UNBD:
-                self.log("[Gurobi:ERROR]: Solution found was infinite or unbounded.", error=True)
+                self.log("Solution found was infinite or unbounded.", error=True)
             else:
-                self.log("[Gurobi:ERROR]: Gurobi exited with status {}.".format(model.status), error=True)
+                self.log("Gurobi exited with status {}.".format(model.status), error=True)
             exit(1)
 
     def get_solutions(self, model):
@@ -79,25 +82,28 @@ class NativeGurobiSolver(object):
         solution_count = model.getAttr(GRB.Attr.SolCount)
         variables = model.getVars()
 
-        solutions = []
         for i in range(solution_count):
             model.setParam(GRB.Param.SolutionNumber, i)
             obj_value = model.getAttr(GRB.Attr.PoolObjVal)
             values = model.getAttr(GRB.Attr.Xn)
 
-            solutions.append("# Objective Value = {}".format(int(obj_value)))
+            self.solutions.append("# Objective Value = {}".format(int(obj_value)))
             for i, value in enumerate(values):
-                solutions.append("{} {}".format(variables[i].getAttr(GRB.Attr.VarName), int(value)))
-            solutions.append("")
+                self.solutions.append("{} {}".format(variables[i].varName, int(value)))
+            self.solutions.append("")
 
         # Print the solution string to console
-        solution_string = "\n".join(solutions)
-        print(solution_string)
+        solutions_string = "\n".join(self.solutions)
+        print(solutions_string)
 
-        # Write out to file if specified
+    def write_solutions(self):
+        """
+        Write out solutions to file if specified
+        """
         if self.resultfile:
             with open(self.resultfile, 'w+') as f:
-                f.write(solution_string)
+                solutions_string = "\n".join(self.solutions)
+                f.write(solutions_string)
 
     def log(self, string, error=False):
         """
@@ -108,4 +114,5 @@ class NativeGurobiSolver(object):
         else:
             print("[NativeGurobiSolver]: {}".format(string))
 
-NativeGurobiSolver()
+if __name__ == "__main__":
+    NativeGurobiSolver()
