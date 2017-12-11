@@ -14,7 +14,7 @@ For every variable C(i) that set to 1, do
 
 This ensures that we don't select all of them again, but we can select a subset of them.
 
-**Usage:** `python IterGurobiSolver.py --numSols=[num solutions to find] --resultile=[results.sol] [ilp-filename.lp]`
+**Usage:** `python IterGurobiSolver.py --numSols=[num solutions to find] --resultfile=[results.sol] [ilp-filename.lp]`
 
 **Limitations:**
 
@@ -23,7 +23,7 @@ This only works with ILPs that only use binary variables, because of the way it 
 ## `NativeGurobiSolver.py`
 Runs Gurobi on the ILP, but uses the native Gurobi API to search for the `n` best solutions.
 
-**Usage:** `python NativeGurobiSolver.py --numSols=[num solutions to find] --resultile=[results.sol] [ilp-filename.lp]`
+**Usage:** `python NativeGurobiSolver.py --numSols=[num solutions to find] --resultfile=[results.sol] [ilp-filename.lp]`
 
 # Setup
 Both files require the [Gurobi Python API](http://www.gurobi.com/documentation/6.5/quickstart_mac/the_gurobi_python_interfac.html)
