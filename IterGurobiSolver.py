@@ -8,9 +8,12 @@ class IterGurobiSolver(object):
     Takes in a ILP file, and (using Gurobi Python API) iteratively tries to find all solutions
     """
     def __init__(self):
+        # We'll parse these variables from the command line.
         self.ilp_filename = None
         self.num_solutions = None
         self.resultfile = None
+
+        # Stores a list of strings, which we'll write out to the resultfile later
         self.solutions = []
 
         self.parse_args()
@@ -85,24 +88,30 @@ class IterGurobiSolver(object):
         self.log("Found a solution!")
         this_solution = []
 
-        # Get the solution count and variables
-        solution_count = model.getAttr(GRB.Attr.SolCount)
+        # Get the ILP variables
         variables = model.getVars()
 
+        # Get the objective value
         obj_value = model.objVal
-
         this_solution.append("# Objective Value = {}".format(int(obj_value)))
 
         # Collect the variables that are set to 1
         ones_vars = []
+
+        # For each variable
         for var in variables:
+            # Extract the variable's name and value
             var_name = var.varName
             var_value = int(var.x)
 
+            # Add this solution to the solutions list
             this_solution.append("{} {}".format(var_name, var_value))
 
+            # If it's a 1, remember it
             if var_value == 1:
                 ones_vars.append(var)
+
+        # Add a blank line to the solutions list, so it looks better
         this_solution.append("")
 
         # Print the solution string to console
@@ -115,7 +124,8 @@ class IterGurobiSolver(object):
         # Compile a new constraint to get different values
         # For every variable C(i) that set to 1, do
         # sum(C(i)) <= (# Of 1's Variables) - 1
-        # This ensures that we don't select all of them again, but we can select a subset of them
+        # This ensures that we don't select all of them again,
+        # but we can select a subset of them
         constraints = sum(ones_vars)
         model.addConstr(constraints <= (obj_value - 1))
 
@@ -125,6 +135,7 @@ class IterGurobiSolver(object):
         """
         if self.resultfile:
             with open(self.resultfile, 'w+') as f:
+                # Joins all the strings in solutions with a newline
                 solutions_string = "\n".join(self.solutions)
                 f.write(solutions_string)
 
@@ -138,4 +149,5 @@ class IterGurobiSolver(object):
             print("[IterGurobiSolver]: {}".format(string))
 
 if __name__ == "__main__":
+    # Runs the IterGurobiSolver
     IterGurobiSolver()

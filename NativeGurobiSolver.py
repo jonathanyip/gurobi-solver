@@ -8,9 +8,12 @@ class NativeGurobiSolver(object):
     Takes in a ILP file, and (using Gurobi Python API) natively tries to find all solutions
     """
     def __init__(self):
+        # We'll parse these variables from the command line.
         self.ilp_filename = None
         self.num_solutions = None
         self.resultfile = None
+
+        # Stores a list of strings, which we'll write out to the resultfile later
         self.solutions = []
 
         self.parse_args()
@@ -82,13 +85,23 @@ class NativeGurobiSolver(object):
         solution_count = model.getAttr(GRB.Attr.SolCount)
         variables = model.getVars()
 
+        # For each feasible solution found
         for i in range(solution_count):
+            # Set the SolutionNumber
             model.setParam(GRB.Param.SolutionNumber, i)
+
+            # Xn returns a list of variable values in order
+            # variables has a list of variables in that same order
+
+            # For this SolutionNumber, extract the objective value
+            # and list of variables values (Xn)
             obj_value = model.getAttr(GRB.Attr.PoolObjVal)
             values = model.getAttr(GRB.Attr.Xn)
 
+            # Save the Objective Value
             self.solutions.append("# Objective Value = {}".format(int(obj_value)))
             for i, value in enumerate(values):
+                # Save the Variable Name and Value
                 self.solutions.append("{} {}".format(variables[i].varName, int(value)))
             self.solutions.append("")
 
@@ -102,6 +115,7 @@ class NativeGurobiSolver(object):
         """
         if self.resultfile:
             with open(self.resultfile, 'w+') as f:
+                # Joins all the strings in solutions with a newline
                 solutions_string = "\n".join(self.solutions)
                 f.write(solutions_string)
 
@@ -115,4 +129,5 @@ class NativeGurobiSolver(object):
             print("[NativeGurobiSolver]: {}".format(string))
 
 if __name__ == "__main__":
+    # Runs the NativeGurobiSolver
     NativeGurobiSolver()
