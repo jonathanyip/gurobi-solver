@@ -1,5 +1,6 @@
 import sys
 import argparse
+import timeit
 
 from gurobipy import GRB, read
 
@@ -130,4 +131,7 @@ class NativeGurobiSolver(object):
 
 if __name__ == "__main__":
     # Runs the NativeGurobiSolver
+    start = timeit.default_timer()
     NativeGurobiSolver()
+    stop = timeit.default_timer()
+    print stop - start
