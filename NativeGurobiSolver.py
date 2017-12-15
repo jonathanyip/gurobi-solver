@@ -134,4 +134,4 @@ if __name__ == "__main__":
     start = timeit.default_timer()
     NativeGurobiSolver()
     stop = timeit.default_timer()
-    print stop - start
+    print("Elapsed Time: {}".format(stop - start))

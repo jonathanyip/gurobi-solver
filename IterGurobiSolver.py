@@ -154,4 +154,4 @@ if __name__ == "__main__":
     start = timeit.default_timer()
     IterGurobiSolver()
     stop = timeit.default_timer()
-    print stop - start
+    print("Elapsed Time: {}".format(stop - start))

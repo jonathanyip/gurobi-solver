@@ -78,7 +78,7 @@ for i in *0.50.lp ; do
   if test -f "$i"
   then
 #echo "$i"
-    v="python $IterGurobiSolver -r ${i%.lp}.result -n $numberSolutions $i | tail -1 >> ItertimeResults${numberSolutions}.txt"
+    v="python $IterGurobiSolver -r ${i%.lp}.result -n $numberSolutions $i | tail -1 | awk '{ print $3 }' >> ItertimeResults${numberSolutions}.txt"
 #echo $v
     eval $v
     who="echo ${i%.lp} Number of Solutions:$numberSolutions >> ItertimeResults${numberSolutions}.txt"
@@ -105,7 +105,7 @@ for i in *0.50.lp ; do
   fi
 done
 
-move="mv NativeResults*.txt Test1" 
+move="mv NativeResults*.txt Test1"
 move1="mv ItertimeResults*.txt Test1"
 move2="mv *.lp Test1"
 move3="mv *.txt Test1"
